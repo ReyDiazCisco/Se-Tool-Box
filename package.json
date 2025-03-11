@@ -1,0 +1,43 @@
+{
+  "name": "SE-Toolbox",
+  "version": "2.0.0",
+  "description": "A collection of projects to assist Solutions Engineers",
+  "author": "Rey Diaz",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron electron/main.js",
+
+    "build-electron-win": "electron-builder --win --x64 --config.directories.output=release/win",
+    "build-electron-mac": "electron-builder --mac --config.directories.output=release/mac"
+  },
+  "build": {
+    "appId": "com.example.setoolbox", 
+
+    "files": [
+      "electron/**",
+      "frontend/dist/**"
+    ],
+    "extraResources": [
+      {
+        "from": "backend/dist/win",
+        "to": "backend",
+        "filter": ["main.exe"]
+      },
+      {
+        "from": "backend/dist/mac",
+        "to": "backend",
+        "filter": ["main"]
+      }
+    ],
+    "win": {
+      "icon": "path/to/icon.ico"
+    },
+    "mac": {
+      "category": "public.app-category.productivity"
+    }
+  },
+  "devDependencies": {
+    "electron": "^34.0.0",
+    "electron-builder": "^25.1.8"
+  }
+}

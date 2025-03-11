@@ -1,0 +1,11 @@
+/* src/index.css */
+
+/* Reset or your own global styles */
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Roboto, Arial, sans-serif;
+}
