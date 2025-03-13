@@ -5,12 +5,12 @@ SE ToolBox is a cross-platform desktop application designed for engineers to eff
 ## Table of Contents
 1. [Overview](#overview)
 2. [Prerequisites](#prerequisites)
-3. [Installation & Setup](#installation--setup)
+3. [Installation & Setup (For Local Deployment)](#installation--setup-for-local-deployment)
    - [Python Backend Setup](#python-backend-setup)
    - [Frontend Setup](#frontend-setup)
    - [Electron Setup](#electron-setup)
 4. [Development Workflow](#development-workflow)
-5. [Building a Release](#building-a-release)
+5. [Building a Release (Making an Executable File)](#building-a-release-making-an-executable-file)
 6. [Application Features](#application-features)
 7. [Troubleshooting](#troubleshooting)
 8. [License](#license)
@@ -46,7 +46,7 @@ Before you start, ensure you have the following installed:
 
 ---
 
-## Installation & Setup
+## Installation & Setup (For Local Deployment)
 
 ### Python Backend Setup
 
@@ -120,60 +120,66 @@ For day-to-day development, follow these steps:
 
 ---
 
-## Building a Release
+## Building a Release (Making an Executable File)
 
-Follow these steps to create a packaged release for your platform:
+After completing your coding session and making changes, follow these steps to update and package your release:
 
-### 1. Build the Python Backend with PyInstaller
+1. **Rebuild the Python Backend:**
 
-- **Generate the Executable:**
-  ```bash
-  cd backend
-  pyinstaller --onefile main.py
-  ```
-  This creates a standalone executable in the `dist` folder.
-
-- **Move the Executable:**
-  Copy the generated executable to the appropriate folder within `release/` (e.g., `release/win` for Windows or `release/mac` for macOS).
-
-### 2. Build the Frontend (React App)
-
-- **Create Optimized Assets:**
-  ```bash
-  cd ../frontend
-  npm run build
-  ```
-  This generates a `dist/` folder containing your optimized React assets.
-
-### 3. Package the Electron App
-
-- **Bundle the Application:**
-  ```bash
-  cd ..
-  npm run build-electron
-  ```
-  This command packages the Electron app—integrating the built frontend assets and the backend executable—into a final release folder (e.g., `release/2.0.1/`).
-
-### After a Coding Session
-
-To update your release after making changes:
-1. **Rebuild the Backend** (if Python code has changed):
+   If your Python code has changed, regenerate the backend executable using PyInstaller:
    ```bash
    cd backend
    pyinstaller --onefile main.py
    ```
-   Then, move the new executable into the correct release folder.
-2. **Rebuild the Frontend:**
+   This creates your executable in the `backend/dist` folder.
+
+2. **Create Platform-Specific Folders in `backend/dist`:**
+
+   Based on the package file configuration, Electron Builder expects the backend executable to reside in separate folders:
+   
+   - **For Windows:**
+     - Create a folder `win` inside `backend/dist` if it doesn't exist:
+       ```bash
+       mkdir -p backend/dist/win
+       ```
+     - Move your Windows executable (`main.exe`) into this folder:
+       ```bash
+       mv backend/dist/main.exe backend/dist/win/
+       ```
+       
+   - **For macOS:**
+     - Create a folder `mac` inside `backend/dist` if it doesn't exist:
+       ```bash
+       mkdir -p backend/dist/mac
+       ```
+     - Move your macOS executable (`main`) into this folder:
+       ```bash
+       mv backend/dist/main backend/dist/mac/
+       ```
+
+3. **Rebuild the Frontend (React App):**
+
+   Regenerate the optimized frontend assets:
    ```bash
    cd ../frontend
    npm run build
    ```
-3. **Repackage the Electron App:**
-   ```bash
-   cd ..
-   npm run build-electron-win   # For Windows builds
-   npm run build-electron-mac   # For macOS builds
-   ```
+   This generates a `frontend/dist/` folder with production-ready React assets.
+
+4. **Package the Electron App:**
+
+   From the project root, run the packaging script for your target platform:
+   - **For Windows:**
+     ```bash
+     npm run build-electron-win
+     ```
+   - **For macOS:**
+     ```bash
+     npm run build-electron-mac
+     ```
+   These commands bundle the backend executable (sourced from `backend/dist/win` or `backend/dist/mac`) along with the frontend assets into a final standalone application. The final packaged app is typically output in a subfolder within `release/` (for example, `release/win` or `release/mac`, depending on your configuration).
+
+By following these steps, you ensure that your latest code is compiled, built, and packaged into a self-contained release for your target platform.
 
 ---
 
@@ -215,11 +221,3 @@ SE ToolBox is designed to streamline data processing tasks with features such as
   If you encounter issues with session IDs when uploading Excel files, double-check that the file contains the required sheet ("Powered by Cisco Ready") and that all necessary columns are present.
 
 ---
-
-## License
-
-Distributed under the [MIT License](LICENSE).
-
----
-
-This README is intended to provide a forward-thinking, step-by-step guide to setting up, developing, and packaging SE ToolBox on your PC. For further details, troubleshooting, or contributions, please refer to our project repository.
