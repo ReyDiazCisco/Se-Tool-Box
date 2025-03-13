@@ -1,215 +1,225 @@
-# Electron + FastAPI + React (Vite) App
+# SE ToolBox – Comprehensive README
 
-This is a **desktop application** built with:
-
-- **React + Vite** for the frontend,  
-- **FastAPI** (packaged via PyInstaller) for the backend,  
-- **Electron** to bundle everything into a cross-platform desktop app.
+SE ToolBox is a cross-platform desktop application designed for engineers to efficiently filter and process data using custom scripts and automation. It integrates a FastAPI backend (packaged via PyInstaller), a React + Vite frontend, and Electron to deliver a unified desktop experience for both Windows and macOS.
 
 ## Table of Contents
-
-- [Overview](#overview)  
-- [Project Structure](#project-structure)  
-- [Setup & Installation](#setup--installation)  
-  - [Python Backend Setup](#python-backend-setup)  
-  - [Frontend Setup](#frontend-setup)  
-  - [Electron Setup](#electron-setup)  
-- [Development](#development)  
-  - [Starting the App in Dev Mode](#starting-the-app-in-dev-mode)  
-- [Building Releases](#building-releases)  
-  - [After a Coding Session](#after-a-coding-session)  
-- [License](#license)
+1. [Overview](#overview)
+2. [Prerequisites](#prerequisites)
+3. [Installation & Setup](#installation--setup)
+   - [Python Backend Setup](#python-backend-setup)
+   - [Frontend Setup](#frontend-setup)
+   - [Electron Setup](#electron-setup)
+4. [Development Workflow](#development-workflow)
+5. [Building a Release](#building-a-release)
+6. [Application Features](#application-features)
+7. [Troubleshooting](#troubleshooting)
+8. [License](#license)
 
 ---
 
 ## Overview
 
-- **Frontend**: A React application bootstrapped by [Vite](https://vitejs.dev/).  
-- **Backend**: A [FastAPI](https://fastapi.tiangolo.com/) server packaged into a single executable (`main.exe`) using [PyInstaller](https://pyinstaller.org/).  
-- **Desktop**: [Electron](https://www.electronjs.org/) ties everything together into a single `.exe` (or corresponding binary on macOS/Linux).
+SE ToolBox is built to help engineers automate data filtering tasks by combining the power of:
+- **FastAPI** for backend processing,
+- **React + Vite** for a responsive frontend,
+- **Electron** for packaging the whole stack into a standalone desktop app.
 
-When the Electron app launches, it **spawns** the Python backend in the background, then displays the React UI. The UI makes HTTP requests to `localhost:8000` (or whichever port you configure) to communicate with the backend.
-
----
-
-## Project Structure
-
-A possible layout:
-
-
-```
-my-electron-fastapi-app/
-├── backend/                     # Backend directory containing FastAPI server code
-│   ├── core/                    # Core functionalities and routes for the backend
-│   │   ├── __pycache__/         # Python cache files
-│   │   ├── logger.py            # Logger setup (currently empty)
-│   │   ├── routes.py            # Core routes for the backend
-│   │   └── server.py            # Server setup (currently empty)
-│   ├── projects/                # Project-specific logic and routes
-│   │   ├── filters/             # Filtering logic and routes
-│   │   │   ├── logic.py         # Logic for filtering data
-│   │   │   ├── routes.py        # Routes for filtering operations
-│   │   │   └── schemas.py       # Schemas for filtering requests
-│   ├── build/                   # Build artifacts (ignored by .gitignore)
-│   ├── dist/                    # PyInstaller output (ignored by .gitignore)
-│   ├── main.py                  # Main entry point for the FastAPI server
-│   ├── main.spec                # PyInstaller spec file for building the backend
-│   ├── requirements.txt         # Python dependencies
-├── electron/                    # Electron main process code
-│   └── main.js                  # Main entry point for Electron
-├── frontend/                    # Frontend directory containing React application
-│   ├── public/                  # Public assets
-│   ├── src/                     # Source code for the React application
-│   │   ├── assets/              # Static assets like images and fonts
-│   │   ├── components/          # Reusable React components
-│   │   ├── pages/               # React components for different pages
-│   │   ├── App.css              # Global CSS for the application
-│   │   ├── App.jsx              # Main App component
-│   │   ├── index.css            # Global CSS styles
-│   │   └── main.jsx             # Entry point for the React application
-│   ├── .gitignore               # Git ignore file for the frontend
-│   ├── eslint.config.js         # ESLint configuration
-│   ├── index.html               # HTML template for the React application
-│   ├── package.json             # Node.js dependencies and scripts
-│   ├── README.md                # README for the frontend
-│   └── vite.config.js           # Vite configuration
-├── .gitattributes               # Git attributes file
-├── .gitignore                   # Git ignore file
-├── package.json                 # Node.js dependencies and scripts for Electron
-├── README.md                    # Project README file
-└── release/                     # Release artifacts for Electron builds (ignored by .gitignore)
-    ├── win/                     # Windows-specific release artifacts
-    ├── builder-debug.yml        # Electron builder debug configuration
-    ├── builder-effective-config.yaml # Effective configuration for Electron builder
-    └── latest.yml               # Latest release metadata
-```
-
+Using dual filter sets (A & B) and logic operations (difference, intersection, union, etc.), users can upload Excel files, process data, and export detailed reports.
 
 ---
 
-## Setup & Installation
+## Prerequisites
+
+Before you start, ensure you have the following installed:
+
+- **Python 3.8+**  
+  Download from [python.org](https://www.python.org/downloads/)
+
+- **Node.js (v14+ recommended)**  
+  Download from [nodejs.org](https://nodejs.org/)
+
+- **Visual Studio Code (optional, but recommended for development)**  
+  Download from [code.visualstudio.com](https://code.visualstudio.com/)
+
+- **Git**  
+  Download from [git-scm.com](https://git-scm.com/downloads/)
+
+---
+
+## Installation & Setup
 
 ### Python Backend Setup
 
-1. **Install Python dependencies**:
+1. **Install Python Dependencies:**
+
+   Open a terminal and run:
    ```bash
    cd backend
    pip install -r requirements.txt
    ```
-2. **Test FastAPI** (optional):
+2. **Test the FastAPI Server:**
+
+   Run:
    ```bash
    python main.py
    ```
-   - You should see FastAPI running at `http://127.0.0.1:8000`.
+   You should see the FastAPI server running at [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
 ### Frontend Setup
 
-1. **Install Node dependencies**:
+1. **Install Node.js Dependencies:**
+
+   In another terminal, navigate to the frontend folder:
    ```bash
-   cd ../frontend
+   cd frontend
    npm install
    ```
-2. **Run the React app (dev mode)**:
+2. **Run the React App in Development Mode:**
+
+   Launch the development server:
    ```bash
    npm run dev
    ```
-   - By default, it’s served at `http://localhost:5173`.
+   By default, the React app will be served at [http://localhost:5173](http://localhost:5173).
 
 ### Electron Setup
 
-1. **Install electron & electron-builder** (in the project root, if not already):
+1. **Install Electron Dependencies:**
+
+   In the project root (if not already done):
    ```bash
    cd ..
    npm install
    ```
+   This will install Electron and electron-builder as defined in the root `package.json`.
 
 ---
 
-## Development
+## Development Workflow
 
-### Starting the App in Dev Mode
+For day-to-day development, follow these steps:
 
-For local development, you typically:
-1. **Run the FastAPI server** in one terminal:
+1. **Run the FastAPI Server** (Backend):
    ```bash
    cd backend
    python main.py
    ```
-2. **Run the React dev server** in another terminal:
+
+2. **Run the React Dev Server** (Frontend):
    ```bash
    cd frontend
    npm run dev
    ```
-3. **Run Electron** in a third terminal:
+
+3. **Run the Electron App in Dev Mode:**
    ```bash
    cd ..
    npm run start
    ```
-   - This spawns Electron pointing to your `frontend/dist` or the dev URL, depending on your setup.  
-   - Alternatively, you might tweak `electron/main.js` to load `http://localhost:5173` in dev mode.
-
-> **Note**: For quick prototyping, you don’t *need* to run PyInstaller each time in dev mode. You can just run the Python server directly.
+   This command launches Electron and loads the React app (either from the dev server or from the built assets).
 
 ---
 
-## Building Releases
+## Building a Release
 
-### 1. PyInstaller (Backend)
+Follow these steps to create a packaged release for your platform:
 
-```bash
-cd backend
-pyinstaller --onefile main.py
-move dist into win/mac folder
-```
-- This creates `dist/main.exe`.  
-- **Note**: If you prefer a custom `.spec` file, use that instead.
+### 1. Build the Python Backend with PyInstaller
 
-### 2. Frontend (Vite Build)
+- **Generate the Executable:**
+  ```bash
+  cd backend
+  pyinstaller --onefile main.py
+  ```
+  This creates a standalone executable in the `dist` folder.
 
-```bash
-cd ../frontend
-npm run build
-```
-- This creates `dist/` with optimized JS/CSS.
+- **Move the Executable:**
+  Copy the generated executable to the appropriate folder within `release/` (e.g., `release/win` for Windows or `release/mac` for macOS).
 
-### 3. Electron (Final `.exe`)
+### 2. Build the Frontend (React App)
 
-```bash
-cd ..
-npm run build-electron
-```
-- This will:
-  - Possibly bump the version (if using automatic version scripts).  
-  - Package your Electron app, pulling in `frontend/dist` (React) and `backend/dist/main.exe` (FastAPI).  
-  - Output to something like `release/2.0.1/` (depending on your config).
+- **Create Optimized Assets:**
+  ```bash
+  cd ../frontend
+  npm run build
+  ```
+  This generates a `dist/` folder containing your optimized React assets.
 
----
+### 3. Package the Electron App
+
+- **Bundle the Application:**
+  ```bash
+  cd ..
+  npm run build-electron
+  ```
+  This command packages the Electron app—integrating the built frontend assets and the backend executable—into a final release folder (e.g., `release/2.0.1/`).
 
 ### After a Coding Session
 
-To **rebuild** everything in a typical workflow:
-
-1. **Update backend code**, if any  
-   - Re-run PyInstaller if your Python code changed significantly:
-     ```bash
-     cd backend
-     pyinstaller --onefile main.py
-     move dist into win/mac folder
-     ```
-2. **Update frontend code**  
-   - Re-build your React app:
-     ```bash
-     cd ../frontend
-     npm run build
-     ```
-3. **Build Electron** (optional if you want a new `.exe`)  
+To update your release after making changes:
+1. **Rebuild the Backend** (if Python code has changed):
+   ```bash
+   cd backend
+   pyinstaller --onefile main.py
+   ```
+   Then, move the new executable into the correct release folder.
+2. **Rebuild the Frontend:**
+   ```bash
+   cd ../frontend
+   npm run build
+   ```
+3. **Repackage the Electron App:**
    ```bash
    cd ..
-   npm run build-electron-win
-   npm run build-electron-mac
+   npm run build-electron-win   # For Windows builds
+   npm run build-electron-mac   # For macOS builds
    ```
-   - Creates the final release folder (e.g. `release/2.0.1/`).
-
-Now you have an updated, self-contained desktop app with the latest code.
 
 ---
+
+## Application Features
+
+SE ToolBox is designed to streamline data processing tasks with features such as:
+
+- **Dual Filter Sets:**  
+  Users can define two sets of filters (Set A and Set B) to narrow down data from an uploaded Excel file. The app supports various logic types (difference, intersection, union, etc.) to combine these filters.
+
+- **FastAPI Backend:**  
+  Manages file uploads, data processing, and dynamic filtering, while offering endpoints for unique value retrieval and exporting filtered data.
+
+- **React Frontend:**  
+  Provides an intuitive UI built with Vite and Material UI. Users can upload files, select filters, preview results, and trigger exports directly from the interface.
+
+- **Excel Export:**  
+  Generates a comprehensive Excel report that includes:
+  - A **Summary** sheet showing the applied filters and final results.
+  - Sheets for **Set A**, **Set B Overlap**, a **Full Report** of all data, and an optional **Pivot Summary** for quick insights.
+
+- **Electron Integration:**  
+  Packages the backend and frontend together into a seamless, cross-platform desktop application.
+
+---
+
+## Troubleshooting
+
+- **Server Issues:**  
+  If the FastAPI server doesn’t start, verify that port 8000 is free or change the port in `main.py`.
+
+- **Dependency Errors:**  
+  Ensure all Python and Node dependencies are installed. Re-run `pip install -r requirements.txt` or `npm install` as needed.
+
+- **Build Failures:**  
+  Check the terminal output for errors during the PyInstaller, React build, or Electron packaging steps. Ensure that your environment variables and configurations are correct.
+
+- **Session Errors:**  
+  If you encounter issues with session IDs when uploading Excel files, double-check that the file contains the required sheet ("Powered by Cisco Ready") and that all necessary columns are present.
+
+---
+
+## License
+
+Distributed under the [MIT License](LICENSE).
+
+---
+
+This README is intended to provide a forward-thinking, step-by-step guide to setting up, developing, and packaging SE ToolBox on your PC. For further details, troubleshooting, or contributions, please refer to our project repository.
