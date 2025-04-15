@@ -162,6 +162,7 @@ After completing your coding session and making changes, follow these steps to u
    Regenerate the optimized frontend assets:
    ```bash
    cd ../frontend
+   npm install
    npm run build
    ```
    This generates a `frontend/dist/` folder with production-ready React assets.
