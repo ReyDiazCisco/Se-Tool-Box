@@ -83,14 +83,26 @@ def get_columns(session_id: str) -> List[str]:
 
 def get_unique_column_values(session_id: str, column_name: str) -> list:
     """
-    Retrieves the dataframe for the given session_id and returns a list of unique values from the specified column.
+    Retrieve unique values for a specific column for a given session ID.
     """
     if session_id not in SESSION_DATA:
         raise KeyError("Session not found.")
     df = SESSION_DATA[session_id]["df"]
-    if column_name not in df.columns:
-        raise KeyError(f"Column '{column_name}' not found.")
-    return df[column_name].astype(str).unique().tolist()
+
+    # Currently not applying filters before getting unique values in pipeline identification
+    # filtered_df = apply_filters_incremental(df, filters)
+    filtered_df = df  # Use the whole DataFrame for now
+
+    try:
+        unique_vals = filtered_df[column_name].dropna().unique()
+    except KeyError as e:
+        print(f"KeyError in get_unique_column_values:")
+        print(f"  Requested column_name: '{column_name}'")
+        print(f"  Available columns: {list(df.columns)}")
+        raise e # Re-raise the exception after printing
+
+    unique_vals = sorted(unique_vals, key=lambda x: str(x))
+    return list(unique_vals)
 
 
 from .schemas import IdentificationCriteria, StringFilter, NumberFilter, DateFilter # Import the schema
