@@ -29,8 +29,11 @@ def get_pipeline_identifier_columns(file_id: str):
     """
     Retrieve column information for a given file ID in pipeline identification.
     """
-    # Placeholder implementation
-    return {"message": f"Received request for columns for file ID: {file_id}"}
+    try:
+        columns = get_columns(file_id)
+        return {"columns": columns}
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Session not found.")
 
 @router.post("/pipeline-identifier/upload")
 def upload_pipeline_identifier_file(file: UploadFile = File(...)):
