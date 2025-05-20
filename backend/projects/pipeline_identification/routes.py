@@ -23,6 +23,15 @@ async def upload_pipeline_identifier_file(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing file: {e}")
 
+
+@router.get("/pipeline-identifier/columns/{file_id}")
+def get_pipeline_identifier_columns(file_id: str):
+    """
+    Retrieve column information for a given file ID in pipeline identification.
+    """
+    # Placeholder implementation
+    return {"message": f"Received request for columns for file ID: {file_id}"}
+
 @router.post("/upload")
 def upload_file(file: UploadFile = File(...)):
     """
