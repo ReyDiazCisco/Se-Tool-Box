@@ -24,7 +24,7 @@ def load_excel_to_memory(file_bytes: bytes) -> pd.DataFrame:
     """
     Reads the Excel from 'Powered by Cisco Ready' sheet into a DataFrame.
     Attempts to infer and convert data types (dates, numbers).
-    Ensures required columns exist and converts other columns to strings, stripping whitespace.
+    Ensures required columns exist and converts all columns to strings, stripping whitespace.
     """
     try:
         # Attempt normal .xlsx
@@ -38,25 +38,12 @@ def load_excel_to_memory(file_bytes: bytes) -> pd.DataFrame:
         if col not in df.columns:
             raise ValueError(f"Missing required column: {col}")
 
-    # Attempt to convert common date and numeric columns
-    date_cols = ["Covered Line Start Date", "Covered Line End Date", "Ship Date", "Last Renewal Date", "End of Software Maintenance Date", "End-of-Life Announcement Date", "End of Routine Failure Analysis Date", "Last Date of Support", "Warranty End Date"] # Add other potential date columns
-    numeric_cols = ["Product List Price $", "Default Service List Price $", "Existing Coverage Level List Price $", "Item Quantity"] # Add other potential numeric columns
-
-    for col in date_cols:
-        if col in df.columns:
-            df[col] = pd.to_datetime(df[col], errors='coerce').dt.date # Convert to date objects, coerce errors to NaT
-
-    for col in numeric_cols:
-         if col in df.columns:
-            # Attempt conversion, coerce errors to NaN
-            df[col] = pd.to_numeric(df[col], errors='coerce')
-
-    # Convert remaining columns (not explicitly handled) to string and strip whitespace
-    for col in df.columns:
-        if col not in date_cols and col not in numeric_cols:
-            df[col] = df[col].astype(str).str.strip()
+    # Convert everything to string and strip whitespace
+    df = df.astype(str)
+    df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 
     return df
+
 
 
 def start_new_session(file_bytes: bytes) -> str:
