@@ -21,7 +21,7 @@ const ApiClient = {
 
   getColumns: async (sessionId) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/columns/${sessionId}`);
+      const response = await axios.get(`${API_BASE_URL}/pipeline-identifier/columns/${sessionId}`);
       return response.data;
     } catch (error) {
       console.error('Error getting columns:', error);
