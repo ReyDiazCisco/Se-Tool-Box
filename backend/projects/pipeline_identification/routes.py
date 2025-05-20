@@ -32,8 +32,8 @@ def get_pipeline_identifier_columns(file_id: str):
     # Placeholder implementation
     return {"message": f"Received request for columns for file ID: {file_id}"}
 
-@router.post("/upload")
-def upload_file(file: UploadFile = File(...)):
+@router.post("/pipeline-identifier/upload")
+def upload_pipeline_identifier_file(file: UploadFile = File(...)):
     """
     Upload the Excel file, store DataFrame in memory, return session_id
     """
