@@ -12,18 +12,6 @@ from .logic import (
 
 router = APIRouter()
 
-@router.post("/pipeline-identifier/upload")
-async def upload_pipeline_identifier_file(file: UploadFile = File(...)):
-    """
-    Receive and process the uploaded file for pipeline identification.
-    """
-    try:
-        # For now, just confirm the file was received.
-        return {"message": f"File '{file.filename}' received successfully for pipeline identification."}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error processing file: {e}")
-
-
 @router.get("/pipeline-identifier/columns/{file_id}")
 def get_pipeline_identifier_columns(file_id: str):
     """
