@@ -7,7 +7,7 @@ from .schemas import IdentificationCriteria, OpportunityResponse, UploadRequest
 from .logic import (
     start_new_session,
     get_columns,  # Make sure get_columns is imported
-    identify_opportunities,
+    identify_opportunities, # Assume identify_opportunities can return all columns for session ID check
     get_unique_column_values,
     export_opportunities,
 )
@@ -56,11 +56,15 @@ def get_pipeline_identifier_column_values(
     """
     Retrieve unique values for a specific column for a given session ID.
     """
+    print(f"Received request for unique values for column: {column} for session: {session_id}")
     try:
+        # Assume identify_opportunities or a similar function can provide the full dataframe or column list for the session
+        all_columns = get_columns(session_id) # Re-using get_columns to check if column exists
+        if column not in all_columns['columns']:
+             raise HTTPException(status_code=404, detail=f'Column {column} not found.')
+
         values = get_unique_column_values(session_id, column)
         return {"values": values}
-    except KeyError as e:
-        raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         # Log the error for debugging
         print(f"Error in get_pipeline_identifier_column_values: {e}")
