@@ -64,6 +64,7 @@ def start_new_session(file_bytes: bytes) -> str:
     Load the DataFrame, store in SESSION_DATA, and return session_id.
     """
     df = load_excel_to_memory(file_bytes)
+    df.columns = df.columns.str.strip()
     session_id = str(uuid.uuid4())
     print(df.columns)
     SESSION_DATA[session_id] = {"df": df}
