@@ -235,7 +235,6 @@ function PipelineIdentifierPage() {
                         )}
                         // Add MenuProps if needed for styling/positioning the dropdown
                       >
-                        {(uniqueColumnValues[criterion.id] || []).map((value) => (
                         {(uniqueColumnValues[criterion.columnName] || []).map((value) => (
                           <MenuItem key={value} value={value}>
                             {value}
