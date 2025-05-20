@@ -79,6 +79,18 @@ def get_columns(session_id: str) -> List[str]:
     return df.columns.tolist()
 
 
+def get_unique_column_values(session_id: str, column_name: str) -> list:
+    """
+    Retrieves the dataframe for the given session_id and returns a list of unique values from the specified column.
+    """
+    if session_id not in SESSION_DATA:
+        raise KeyError("Session not found.")
+    df = SESSION_DATA[session_id]["df"]
+    if column_name not in df.columns:
+        raise KeyError(f"Column '{column_name}' not found.")
+    return df[column_name].astype(str).unique().tolist()
+
+
 from .schemas import IdentificationCriteria, StringFilter, NumberFilter, DateFilter # Import the schema
 
 def identify_opportunities(session_id: str, criteria: IdentificationCriteria) -> pd.DataFrame:
