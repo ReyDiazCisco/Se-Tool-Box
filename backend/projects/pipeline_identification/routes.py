@@ -6,11 +6,30 @@ from pydantic import BaseModel
 from .schemas import IdentificationCriteria, OpportunityResponse, UploadRequest
 from .logic import (
     start_new_session,
+    get_columns,  # Make sure get_columns is imported
     identify_opportunities,
     export_opportunities,
 )
+import uuid # Import uuid
+
 
 router = APIRouter()
+
+@router.post("/pipeline-identifier/upload")
+async def upload_pipeline_identifier_file(file: UploadFile = File(...)):
+    """
+    Upload the Excel file, store DataFrame in memory, return session_id
+    """
+    try:
+        # Read the file content asynchronously
+        file_bytes = await file.read()
+        session_id = start_new_session(file_bytes)
+        return {"session_id": session_id}
+    except Exception as e:
+        # Log the error for debugging
+        print(f"Error in upload_pipeline_identifier_file: {e}")
+        raise HTTPException(status_code=400, detail=f"Error processing file: {e}")
+
 
 @router.get("/pipeline-identifier/columns/{file_id}")
 def get_pipeline_identifier_columns(file_id: str):
@@ -22,18 +41,11 @@ def get_pipeline_identifier_columns(file_id: str):
         return {"columns": columns}
     except KeyError:
         raise HTTPException(status_code=404, detail="Session not found.")
-
-@router.post("/pipeline-identifier/upload")
-def upload_pipeline_identifier_file(file: UploadFile = File(...)):
-    """
-    Upload the Excel file, store DataFrame in memory, return session_id
-    """
-    try:
-        file_bytes = file.file.read()
-        session_id = start_new_session(file_bytes)
-        return {"session_id": session_id}
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        # Log the error for debugging
+        print(f"Error in get_pipeline_identifier_columns: {e}")
+        raise HTTPException(status_code=500, detail=f"Error retrieving columns: {e}")
+
 
 @router.post("/identify")
 def identify_potential_opportunities(criteria: IdentificationCriteria) -> OpportunityResponse:
@@ -54,7 +66,10 @@ def identify_potential_opportunities(criteria: IdentificationCriteria) -> Opport
     except KeyError:
         raise HTTPException(status_code=404, detail="Session not found.")
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        # Log the error for debugging
+        print(f"Error in identify_potential_opportunities: {e}")
+        raise HTTPException(status_code=400, detail=f"Error identifying opportunities: {e}")
+
 
 @router.post("/export")
 def export_potential_opportunities(criteria: IdentificationCriteria):
@@ -68,4 +83,6 @@ def export_potential_opportunities(criteria: IdentificationCriteria):
     except KeyError:
         raise HTTPException(status_code=404, detail="Session not found.")
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        # Log the error for debugging
+        print(f"Error in export_potential_opportunities: {e}")
+        raise HTTPException(status_code=400, detail=f"Error exporting opportunities: {e}")
