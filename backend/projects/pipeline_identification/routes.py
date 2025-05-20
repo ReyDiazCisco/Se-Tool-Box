@@ -48,20 +48,23 @@ def get_pipeline_identifier_columns(file_id: str):
         raise HTTPException(status_code=500, detail=f"Error retrieving columns: {e}")
 
 
-@router.get("/columns/{session_id}/values") # Corrected path
-def get_pipeline_identifier_column_values(session_id: str, column_name: str = Query(..., description="The name of the column to get unique values for")): # Corrected parameter to use Query and added description
+@router.get("/columns/{session_id}/values")
+def get_pipeline_identifier_column_values(
+    session_id: str,
+    column: str = Query(..., description="Column name to fetch values for")
+):
     """
     Retrieve unique values for a specific column for a given session ID.
     """
     try:
-        values = get_unique_column_values(session_id, column_name)
+        values = get_unique_column_values(session_id, column)
         return {"values": values}
-    except KeyError:
-        raise HTTPException(status_code=404, detail="Session or column not found.")
+    except KeyError as e:
+        raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         # Log the error for debugging
         print(f"Error in get_pipeline_identifier_column_values: {e}")
-        raise HTTPException(status_code=500, detail=f"Error retrieving column values: {e}")
+        raise HTTPException(status_code=500, detail=f"Error retrieving column values: {e}") # Consider a more specific error for unexpected issues
 
 
 @router.post("/identify")
