@@ -2,6 +2,7 @@
 
 import pandas as pd
 from io import BytesIO
+from pathlib import Path
 from typing import Dict, List, Union
 import uuid
 from datetime import date
@@ -19,6 +20,20 @@ REQUIRED_COLUMNS = [
     "SAV Name",
 ] # Just an initial list, refine based on actual identification needs
 
+
+def load_df_for_session(session_id: str) -> pd.DataFrame:
+    """Load the uploaded CSV for this session into a DataFrame."""
+    # NOTE: This assumes files are saved as CSVs in /tmp/uploads.
+    # Adjust file extension and path based on your actual file handling logic.
+    file_path = Path("/tmp/uploads") / f"{session_id}.csv"
+    if not file_path.exists():
+        raise FileNotFoundError(f"No upload found for session {session_id}")
+    df = pd.read_csv(file_path)
+    # strip whitespace from string columns
+    df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+    # Ensure column names are stripped as well
+    df.columns = df.columns.str.strip()
+    return df
 
 def load_excel_to_memory(file_bytes: bytes) -> pd.DataFrame:
     """

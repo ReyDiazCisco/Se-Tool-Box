@@ -1,19 +1,17 @@
 # backend/projects/pipeline_identification/routes.py
 
 from fastapi import APIRouter, File, UploadFile, HTTPException, Query
-from fastapi.responses import Response, JSONResponse
-from pydantic import BaseModel
+from fastapi.responses import Response, JSONResponse # Keep JSONResponse if you use it elsewhere
 from .schemas import IdentificationCriteria, OpportunityResponse, UploadRequest
 from .logic import (
     start_new_session,
-    get_columns,  # Make sure get_columns is imported
+    get_columns,
     identify_opportunities,  # Assume identify_opportunities can return all columns for session ID check
     get_unique_column_values,
     export_opportunities,
 )
 import uuid # Import uuid
 import pandas as pd # Import pandas
-from .logic import load_df_for_session
 router = APIRouter()
 
 @router.post("/upload")
@@ -58,17 +56,26 @@ def get_pipeline_identifier_column_values(
     """
     print(f"Received request for unique values for column: {column} for session: {session_id}")
 
+    # Load the DataFrame for the session
     try:
-        unique_vals = get_unique_column_values(session_id, column)
-        return {"values": unique_vals}
+        df = load_df_for_session(session_id)
+
     except KeyError:
-        raise HTTPException(status_code=404, detail="Session not found.")
+        raise HTTPException(status_code=404, detail=f"Session ID {session_id} not found.")
     except ValueError as e:
         raise HTTPException(status_code=404, detail=f"Column '{column}' not found.")
     except Exception as e:
         # Log the error for debugging
         print(f"Error in get_pipeline_identifier_column_values: {e}")
         raise HTTPException(status_code=500, detail=f"Error retrieving column values: {e}") # Consider a more specific error for unexpected issues
+
+    # Get unique values from the loaded DataFrame using pandas
+    if column not in df.columns:
+         raise HTTPException(status_code=404, detail=f"Column '{column}' not found in session data.")
+
+    unique_vals = df[column].dropna().unique().tolist()
+
+    return {"values": unique_vals}
 
 
 @router.post("/identify")
