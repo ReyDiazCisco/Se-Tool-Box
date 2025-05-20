@@ -29,6 +29,17 @@ const ApiClient = {
     }
   },
 
+  getUniqueColumnValues: async (sessionId, columnName) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/pipeline-identifier/columns/${sessionId}/values/${columnName}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error getting unique values for column ${columnName}:`, error);
+      throw error;
+    }
+  },
+
+
   identifyOpportunities: async (sessionId, criteria) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/identify`, {
