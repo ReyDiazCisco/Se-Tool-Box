@@ -48,8 +48,8 @@ def get_pipeline_identifier_columns(file_id: str):
         raise HTTPException(status_code=500, detail=f"Error retrieving columns: {e}")
 
 
-@router.get("/columns/{session_id}/values")
-def get_pipeline_identifier_column_values(session_id: str, column_name: str = Query(None)):
+@router.get("/columns/{session_id}/values") # Corrected path
+def get_pipeline_identifier_column_values(session_id: str, column_name: str = Query(..., description="The name of the column to get unique values for")): # Corrected parameter to use Query and added description
     """
     Retrieve unique values for a specific column for a given session ID.
     """

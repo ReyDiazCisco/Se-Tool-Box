@@ -31,7 +31,11 @@ const ApiClient = {
 
   getUniqueColumnValues: async (sessionId, columnName) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/pipeline-identifier/columns/${sessionId}/values?column=${encodeURIComponent(columnName)}`);
+      const response = await axios.get(`${API_BASE_URL}/pipeline-identifier/columns/${sessionId}/values`, {
+        params: {
+          column: columnName
+        }
+      });
       return response.data;
     } catch (error) {
       console.error(`Error getting unique values for column ${columnName}:`, error);
