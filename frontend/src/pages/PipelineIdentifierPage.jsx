@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -10,6 +10,8 @@ import {
   Select,
   MenuItem,
   TextField,
+  Chip,
+  OutlinedInput,
   IconButton,
 } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
@@ -27,6 +29,7 @@ function PipelineIdentifierPage() {
   const [error, setError] = useState(null);
   const [criteriaList, setCriteriaList] = useState([]);
   const [opportunities, setOpportunities] = useState([]);
+  const [uniqueColumnValues, setUniqueColumnValues] = useState({}); // State to store unique values for dropdowns
 
   const handleFileUpload = async (file) => {
     setLoading(true);
@@ -60,6 +63,26 @@ function PipelineIdentifierPage() {
     );
   };
 
+  // Fetch unique values for string columns when columnName changes
+  useEffect(() => {
+    criteriaList.forEach(async (criterion) => {
+      const type = getColumnType(criterion.columnName);
+      if (sessionId && criterion.columnName && type === 'string') {
+        if (!uniqueColumnValues[criterion.id]) { // Fetch only if values haven't been fetched for this criterion
+          try {
+            const values = await ApiClient.getUniqueColumnValues(sessionId, criterion.columnName);
+            setUniqueColumnValues(prev => ({
+              ...prev,
+              [criterion.id]: values.values || []
+            }));
+          } catch (err) {
+            console.error(`Error fetching unique values for ${criterion.columnName}:`, err);
+          }
+        }
+      }
+    });
+  }, [criteriaList, sessionId, uniqueColumnValues]); // Add uniqueColumnValues to dependencies
+
   const handleFilterChange = (id, filterField, value) => {
     setCriteriaList((prev) =>
       prev.map((c) =>
@@ -87,7 +110,7 @@ function PipelineIdentifierPage() {
     list.forEach(({ columnName, filter }) => {
       if (!columnName) return;
       const type = getColumnType(columnName);
-      if (type === 'string') {
+      if (type === 'string' && filter.value) { // Only include if filter value exists
         result[columnName] = {
           values: filter.value
             ? filter.value.split(',').map((v) => v.trim())
@@ -200,15 +223,33 @@ function PipelineIdentifierPage() {
                     </FormControl>
 
                     {type === 'string' && (
-                      <TextField
+                      <FormControl size="small" sx={{ flexGrow: 1, mt: 1 }}>
+                      <InputLabel id={`filter-value-label-${criterion.id}`}>Filter Value(s)</InputLabel>
+                      <Select
+                        labelId={`filter-value-label-${criterion.id}`}
+                        multiple
                         size="small"
                         label="Filter Value(s) (comma-separated)"
-                        value={criterion.filter.value || ''}
+                        value={criterion.filter.value || []}
                         onChange={(e) => handleFilterChange(criterion.id, 'value', e.target.value)}
-                        sx={{ flexGrow: 1 }}
+                        input={<OutlinedInput id={`select-multiple-chip-${criterion.id}`} label="Filter Value(s)" />}
+                        renderValue={(selected) => (
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                            {selected.map((value) => (
+                              <Chip key={value} label={value} />
+                            ))}
+                          </Box>
+                        )}
+                        // Add MenuProps if needed for styling/positioning the dropdown
+                      >
+                        {(uniqueColumnValues[criterion.id] || []).map((value) => (
+                          <MenuItem key={value} value={value}>
+                            {value}
+                          </MenuItem>
+                        ))}
+                      </Select>
                       />
                     )}
-
                     {type === 'number' && (
                       <Box sx={{ display: 'flex', gap: 2, flexGrow: 1 }}>
                         <TextField
