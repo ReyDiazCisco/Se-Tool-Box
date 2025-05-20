@@ -1,4 +1,3 @@
-jsx
 import React, { useRef } from 'react';
 import { Button } from '@mui/material';
 
