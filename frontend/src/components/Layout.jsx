@@ -128,7 +128,8 @@ function Layout({ children, onToggleTheme, currentMode }) {
                             </ListItemIcon>
                             <ListItemText primary="Template" />
                         </ListItemButton>
-                        <ListItem disablePadding>
+                    </ListItem>
+                    <ListItem disablePadding>
     <ListItemButton
         component={Link}
         to="/pipeline-identifier"
@@ -140,7 +141,6 @@ function Layout({ children, onToggleTheme, currentMode }) {
         <ListItemText primary="Pipeline Identifier" />
     </ListItemButton>
 </ListItem>
-                    </ListItem>
                 </List>
             </Drawer>
 
