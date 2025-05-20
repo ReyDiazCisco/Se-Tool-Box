@@ -45,7 +45,7 @@ function PipelineIdentifierPage() {
       const uniqueValuesPromises = cols.columns
         .filter(col => getColumnType(col) === 'string')
         .map(async col => {
-          const values = await ApiClient.getUniqueColumnValues(response.session_id, col);
+          const values = await ApiClient.getUniqueColumnValues(response.session_id, encodeURIComponent(col));
           return { columnName: col, values: values.values || [] };
         });
       const fetchedUniqueValues = await Promise.all(uniqueValuesPromises);
