@@ -1,6 +1,6 @@
 # backend/projects/pipeline_identification/routes.py
 
-from fastapi import APIRouter, File, UploadFile, HTTPException
+from fastapi import APIRouter, File, UploadFile, HTTPException, Query
 from fastapi.responses import Response
 from pydantic import BaseModel
 from .schemas import IdentificationCriteria, OpportunityResponse, UploadRequest
@@ -48,8 +48,8 @@ def get_pipeline_identifier_columns(file_id: str):
         raise HTTPException(status_code=500, detail=f"Error retrieving columns: {e}")
 
 
-@router.get("/columns/{session_id}/values")
-def get_pipeline_identifier_column_values(session_id: str, column_name: str = None):
+@router.get("/columns/{session_id}/values") # This path is correct now
+def get_pipeline_identifier_column_values(session_id: str, column_name: str = Query(None)): # Use Query for column_name
     """
     Retrieve unique values for a specific column for a given session ID.
     """
