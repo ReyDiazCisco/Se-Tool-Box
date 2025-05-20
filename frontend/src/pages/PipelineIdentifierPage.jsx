@@ -39,6 +39,7 @@ function PipelineIdentifierPage() {
       setSessionId(response.session_id);
       const cols = await ApiClient.getColumns(response.session_id);
       setColumns(cols.columns);
+      console.log(cols.columns);
 
       // Fetch unique values for all string columns immediately after getting columns
       const uniqueValuesPromises = cols.columns
