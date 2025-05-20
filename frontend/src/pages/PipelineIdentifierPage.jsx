@@ -39,6 +39,16 @@ function PipelineIdentifierPage() {
       setSessionId(response.session_id);
       const cols = await ApiClient.getColumns(response.session_id);
       setColumns(cols.columns);
+
+      // Fetch unique values for all string columns immediately after getting columns
+      const uniqueValuesPromises = cols.columns
+        .filter(col => getColumnType(col) === 'string')
+        .map(async col => {
+          const values = await ApiClient.getUniqueColumnValues(response.session_id, col);
+          return { columnName: col, values: values.values || [] };
+        });
+      const fetchedUniqueValues = await Promise.all(uniqueValuesPromises);
+      setUniqueColumnValues(Object.fromEntries(fetchedUniqueValues.map(item => [item.columnName, item.values])));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -63,25 +73,8 @@ function PipelineIdentifierPage() {
     );
   };
 
-  // Fetch unique values for string columns when columnName changes
-  useEffect(() => {
-    criteriaList.forEach(async (criterion) => {
-      const type = getColumnType(criterion.columnName);
-      if (sessionId && criterion.columnName && type === 'string') {
-        if (!uniqueColumnValues[criterion.id]) { // Fetch only if values haven't been fetched for this criterion
-          try {
-            const values = await ApiClient.getUniqueColumnValues(sessionId, criterion.columnName);
-            setUniqueColumnValues(prev => ({
-              ...prev,
-              [criterion.id]: values.values || []
-            }));
-          } catch (err) {
-            console.error(`Error fetching unique values for ${criterion.columnName}:`, err);
-          }
-        }
-      }
-    });
-  }, [criteriaList, sessionId, uniqueColumnValues]); // Add uniqueColumnValues to dependencies
+  // Remove the useEffect hook that fetched values on criterion column change
+  // useEffect is no longer needed as values are fetched on file upload.
 
   const handleFilterChange = (id, filterField, value) => {
     setCriteriaList((prev) =>
@@ -243,6 +236,7 @@ function PipelineIdentifierPage() {
                         // Add MenuProps if needed for styling/positioning the dropdown
                       >
                         {(uniqueColumnValues[criterion.id] || []).map((value) => (
+                        {(uniqueColumnValues[criterion.columnName] || []).map((value) => (
                           <MenuItem key={value} value={value}>
                             {value}
                           </MenuItem>
