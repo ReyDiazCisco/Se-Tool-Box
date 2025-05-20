@@ -248,7 +248,7 @@ function PipelineIdentifierPage() {
                           </MenuItem>
                         ))}
                       </Select>
-                      />
+                     </FormControl>
                     )}
                     {type === 'number' && (
                       <Box sx={{ display: 'flex', gap: 2, flexGrow: 1 }}>
