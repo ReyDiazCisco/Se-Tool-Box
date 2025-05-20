@@ -32,7 +32,7 @@ function PipelineIdentifierPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await ApiClient.uploadFile(file);
+      const response = await ApiClient.uploadFile(file, "/pipeline-identifier/upload");
       setSessionId(response.session_id);
       const cols = await ApiClient.getColumns(response.session_id);
       setColumns(cols.columns);

@@ -128,6 +128,18 @@ function Layout({ children, onToggleTheme, currentMode }) {
                             </ListItemIcon>
                             <ListItemText primary="Template" />
                         </ListItemButton>
+                        <ListItem disablePadding>
+    <ListItemButton
+        component={Link}
+        to="/pipeline-identifier"
+        selected={activeRoute === "/pipeline-identifier"}
+    >
+        <ListItemIcon>
+            <DescriptionIcon /> {/* Or another appropriate icon */}
+        </ListItemIcon>
+        <ListItemText primary="Pipeline Identifier" />
+    </ListItemButton>
+</ListItem>
                     </ListItem>
                 </List>
             </Drawer>

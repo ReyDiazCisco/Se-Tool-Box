@@ -3,11 +3,11 @@ import axios from 'axios';
 const API_BASE_URL = 'http://localhost:8000'; // Replace with your actual backend URL
 
 const ApiClient = {
-  uploadFile: async (file) => {
+  uploadFile: async (file, uploadUrl) => {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const response = await axios.post(`${API_BASE_URL}/upload`, formData, {
+      const response = await axios.post(`${API_BASE_URL}${uploadUrl}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
