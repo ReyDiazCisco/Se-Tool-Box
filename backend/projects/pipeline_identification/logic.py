@@ -15,6 +15,24 @@ SESSION_DATA: Dict[str, Dict[str, pd.DataFrame]] = {}
 REQUIRED_COLUMNS = [
     "Business Entity",
     "Sub Business Entity",
+] # Just an initial list, refine based on actual identification needs
+
+def load_df_for_session(session_id: str) -> pd.DataFrame:
+    """Load the uploaded CSV for this session into a DataFrame."""
+    upload_dir = Path("/tmp/uploads")  # adjust to your actual path
+    file_path = upload_dir / f"{session_id}.csv"
+    if not file_path.exists():
+        # If using in-memory storage (like SESSION_DATA), this path logic might be different.
+        # If you are storing in memory, the logic should retrieve from SESSION_DATA
+        # For now, I'll stick to the file path assumption as per your prompt.
+        raise FileNotFoundError(f"No upload found for session {session_id}")
+    df = pd.read_csv(file_path)
+    # strip whitespace safely
+    for col in df.select_dtypes(include="object"):
+        df[col] = df[col].str.strip()
+    return df
+
+REQUIRED_COLUMNS = [
     "Product Family",
     "Product ID",
     "SAV Name",
@@ -47,20 +65,6 @@ def load_excel_to_memory(file_bytes: bytes) -> pd.DataFrame:
     except ValueError:
         # Possibly .xlsb
         df = pd.read_excel(BytesIO(file_bytes), sheet_name="Powered by Cisco Ready", engine="pyxlsb")
-
-    # Check required columns
-    for col in REQUIRED_COLUMNS:
-        if col not in df.columns:
-            raise ValueError(f"Missing required column: {col}")
-
-    # Convert everything to string and strip whitespace
-    df = df.astype(str)
-    df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
-
-    return df
-
-
-
 def start_new_session(file_bytes: bytes) -> str:
     """
     Load the DataFrame, store in SESSION_DATA, and return session_id.
