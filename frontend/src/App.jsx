@@ -7,6 +7,7 @@ import Layout from "./components/Layout";
 import HomePage from "./pages/HomePage";
 import FilterPage from "./pages/FilterPage";
 import TemplatePage from "./pages/TemplatePage";
+import PipelineIdentifierPage from "./pages/PipelineIdentifierPage";
 
 function App() {
   // State to manage light/dark mode
@@ -58,6 +59,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/filter" element={<FilterPage />} />
           <Route path="/template" element={<TemplatePage />} />
+          <Route path="/pipeline-identifier" element={<PipelineIdentifierPage />} />
         </Routes>
       </Layout>
     </ThemeProvider>
