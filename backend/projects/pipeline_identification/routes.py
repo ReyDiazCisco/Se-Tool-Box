@@ -1,6 +1,6 @@
 # backend/projects/pipeline_identification/routes.py
 
-from fastapi import APIRouter, File, UploadFile, HTTPException, Query
+from fastapi import APIRouter, File, UploadFile, HTTPException, Query, JSONResponse
 from fastapi.responses import Response
 from pydantic import BaseModel
 from .schemas import IdentificationCriteria, OpportunityResponse, UploadRequest
@@ -12,6 +12,7 @@ from .logic import (
     export_opportunities,
 )
 import uuid # Import uuid
+import pandas as pd # Import pandas
 
 
 router = APIRouter()
@@ -57,14 +58,17 @@ def get_pipeline_identifier_column_values(
     Retrieve unique values for a specific column for a given session ID.
     """
     print(f"Received request for unique values for column: {column} for session: {session_id}")
+    # Assume load_df_for_session is implemented elsewhere to load the DataFrame
+    # for the given session_id.
     try:
-        # Assume identify_opportunities or a similar function can provide the full dataframe or column list for the session
-        all_columns = get_columns(session_id) # Re-using get_columns to check if column exists
-        if column not in all_columns['columns']:
-             raise HTTPException(status_code=404, detail=f'Column {column} not found.')
+        df = load_df_for_session(session_id) # Load the DataFrame
+        print(f"DataFrame columns: {df.columns.tolist()}")
+        
+        if column not in df.columns:
+            return JSONResponse(status_code=404, content={"detail": f"Column '{column}' not found"})
 
-        values = get_unique_column_values(session_id, column)
-        return {"values": values}
+        unique_vals = df[column].dropna().unique().tolist()
+        return {"values": unique_vals}
     except Exception as e:
         # Log the error for debugging
         print(f"Error in get_pipeline_identifier_column_values: {e}")
