@@ -8,6 +8,7 @@ from .logic import (
     start_new_session,
     get_columns,  # Make sure get_columns is imported
     identify_opportunities,
+    get_unique_column_values,
     export_opportunities,
 )
 import uuid # Import uuid
@@ -45,6 +46,22 @@ def get_pipeline_identifier_columns(file_id: str):
         # Log the error for debugging
         print(f"Error in get_pipeline_identifier_columns: {e}")
         raise HTTPException(status_code=500, detail=f"Error retrieving columns: {e}")
+
+
+@router.get("/columns/{session_id}/values/{column_name}")
+def get_pipeline_identifier_column_values(session_id: str, column_name: str):
+    """
+    Retrieve unique values for a specific column for a given session ID.
+    """
+    try:
+        values = get_unique_column_values(session_id, column_name)
+        return {"values": values}
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Session or column not found.")
+    except Exception as e:
+        # Log the error for debugging
+        print(f"Error in get_pipeline_identifier_column_values: {e}")
+        raise HTTPException(status_code=500, detail=f"Error retrieving column values: {e}")
 
 
 @router.post("/identify")
