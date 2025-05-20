@@ -1,6 +1,7 @@
 # backend/projects/pipeline_identification/routes.py
 
 from fastapi import APIRouter, File, UploadFile, HTTPException, Query
+from .schemas import IdentificationCriteria, OpportunityResponse
 from fastapi.responses import Response, JSONResponse
 from .logic import (
     start_new_session,
