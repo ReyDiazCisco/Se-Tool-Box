@@ -6,6 +6,8 @@ import multipart
 
 from core.routes import router as core_router
 from projects.filters.routes import router as filters_router
+from projects.pipeline_identification.routes import router as pipeline_identification_router
+
 
 app = FastAPI()
 
@@ -20,6 +22,8 @@ app.add_middleware(
 # Mount your routers
 app.include_router(core_router, tags=["core"])
 app.include_router(filters_router, prefix="/filters", tags=["filters"])
+app.include_router(pipeline_identification_router, prefix="/pipeline-identifier", tags=["pipeline-identifier"])
+
 
 @app.get("/")
 def read_root():
