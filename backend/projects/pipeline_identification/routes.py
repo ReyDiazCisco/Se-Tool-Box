@@ -14,7 +14,6 @@ from .logic import (
 import uuid # Import uuid
 import pandas as pd # Import pandas
 
-
 from .logic import load_df_for_session
 router = APIRouter()
 
@@ -59,17 +58,14 @@ def get_pipeline_identifier_column_values(
     Retrieve unique values for a specific column for a given session ID.
     """
     print(f"Received request for unique values for column: {column} for session: {session_id}")
-    # Assume load_df_for_session is implemented elsewhere to load the DataFrame
-    # for the given session_id.    # Load the DataFrame
-    try:
-        df = load_df_for_session(session_id)
-        print(f"DataFrame columns: {df.columns.tolist()}")
-        
-        if column not in df.columns:
-            raise HTTPException(status_code=404, detail=f"Column '{column}' not found")
 
-        unique_vals = df[column].dropna().unique().tolist()
+    try:
+        unique_vals = get_unique_column_values(session_id, column)
         return {"values": unique_vals}
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Session not found.")
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=f"Column '{column}' not found.")
     except Exception as e:
         # Log the error for debugging
         print(f"Error in get_pipeline_identifier_column_values: {e}")
