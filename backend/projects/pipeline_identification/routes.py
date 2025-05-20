@@ -15,7 +15,7 @@ import uuid # Import uuid
 
 router = APIRouter()
 
-@router.post("/pipeline-identifier/upload")
+@router.post("/upload")
 async def upload_pipeline_identifier_file(file: UploadFile = File(...)):
     """
     Upload the Excel file, store DataFrame in memory, return session_id
